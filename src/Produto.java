@@ -9,6 +9,7 @@ public abstract class Produto {
 	protected String descricao;
 	protected double precoCusto;
 	protected double margemLucro;
+	protected int quantidadeEmEstoque;
 	
 	/**
      * Inicializador privado. Os valores default, em caso de erro, são:
@@ -82,9 +83,23 @@ public abstract class Produto {
 		return this.descricao.toLowerCase().equals(outro.descricao.toLowerCase());
 	}
 
+	public int getQuantidade() {
+		return quantidadeEmEstoque;
+	}
+	
+	public void baixarEstoque(int quantidade) {
+		if (quantidade > 0 && quantidade <= quantidadeEmEstoque) {
+			quantidadeEmEstoque -= quantidade;
+		}
+	}
+	
+	public String getDescricao() {
+		return descricao;
+	}
+	
 	/**
 	* Gera uma linha de texto a partir dos dados do produto
-	* @return Uma string no formato "tipo; descrição;preçoDeCusto;margemDeLucro;[dataDeValidade]"
+	* @return Uma string no formato "tipo; descrição;preçoDeCusto;margemDeLucro;quantidadeEmEstoque;[dataDeValidade]"
 	*/
 	public abstract String gerarDadosTexto();
 
@@ -104,10 +119,19 @@ public abstract class Produto {
 	String desc = infos[1];
 	double custo = Double.parseDouble(infos[2]);
 	double margem = Double.parseDouble(infos[3]);
+	
 	if (tipo == 1) {
 		novoProduto = new ProdutoNaoPerecivel(desc, custo, margem);
+		if (infos.length > 4) {
+			novoProduto.quantidadeEmEstoque = Integer.parseInt(infos[4]);
+		}
 	}else{
-		novoProduto = new ProdutoPerecivel(infos[1], Double.valueOf(infos[2]), Double.valueOf(infos[3]), LocalDate.parse(infos[4], formatador));
+		if (infos.length > 5) {
+			novoProduto = new ProdutoPerecivel(desc, custo, margem, LocalDate.parse(infos[5], formatador));
+			novoProduto.quantidadeEmEstoque = Integer.parseInt(infos[4]);
+		} else {
+			novoProduto = new ProdutoPerecivel(desc, custo, margem, LocalDate.parse(infos[4], formatador));
+		}
 	}
 	return novoProduto;
 	}
